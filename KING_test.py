@@ -4,11 +4,9 @@ import dotenv
 import os
 
 import telebot
-from telebot import types
-from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
-from telebot.types import InputMediaPhoto
+
 import gspread
-import time
+
 
 """all lexan4ik's defs"""
 
@@ -18,12 +16,12 @@ from lexan import try_out, search, key_keyb, card, card_desc
 from lists_and_dictionaries import mass_search
 from lists_and_dictionaries import search_dict
 from lists_and_dictionaries import dict_search_user
-from lists_and_dictionaries import buf_auto
-from lists_and_dictionaries import auto_
+
 
 """all pablo's defs"""
-from pablo import check_admin2, new_admin, check_admin, del_admin, new_car
+from pablo import check_admin2, new_admin, check_admin, del_admin
 from pablo import dict_new_car
+from functions import new_car, dict_new_car
 
 """all pablos lists and dictionaries"""
 from lists_and_dictionaries import dict_admins
@@ -39,16 +37,13 @@ list_of_lists = sht2.worksheet("av_by").get_all_values()
 
 """pablo keyboards"""
 
-from keyboards import inline_markup_main
-from keyboards import inline_markup_n_admin
-from keyboards import inline_markup_avto
 from keyboards import inline_markup_del_admin
 from keyboards import inline_markup_change_ad
 
 """lexan4ik handlers"""
 
 
-@bot.message_handler(commands=['start','admin_start','newadmin','stat','new_car','help'])
+@bot.message_handler(commands=['start', 'admin_start', 'newadmin', 'stat', 'new_car', 'help'])
 def start(message):
     if message.text == '/start':
         bot.send_message(message.chat.id, "Добро пожаловать")
@@ -76,14 +71,11 @@ def start(message):
 
     if message.text == '/new_car':
         if message.chat.id in dict_admins:
-            bot.send_message(message.chat.id, "Выберите действие с автомобилем", reply_markup=inline_markup_avto)
-        else:
-            bot.send_message(message.chat.id, "У вас нет доступа")
+            dict_new_car[message.from_user.id] = dict_new_car.copy()
+            new_car(message)
 
     if message.text == '/help':
         bot.send_message(message.chat.id, "Здесь должна быть помощь")
-
-
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -94,7 +86,7 @@ def query_handler(call):
     flag = call.data[0:2]
     data = call.data[2:]
     print(call.data)
-###lexan4ik queries
+    ###lexan4ik queries
     if flag == "k1":
         search(call.from_user.id, message_id=call.message.message_id, k_user=data)
 
@@ -108,7 +100,7 @@ def query_handler(call):
     if flag == 'n1':
         card_desc(call.from_user.id, num=int(data), msg_id=call.message.message_id)
 
-####pablo queries
+    ####pablo queries
 
     if flag == 'b0':
         bot.send_message(id, "Вы действительно хотите изменить администратора?", reply_markup=inline_markup_change_ad)
@@ -141,14 +133,7 @@ def query_handler(call):
         bot.send_message(id, "Администратор добавлен")
         print(dict_admins)
 
-    if flag == "h0":
-        dict_new_car[message.from_user.id] = dict_new_car.copy()
-        new_car(message)
-
-
 
 if __name__ == "__main__":
     print("Bot ready")
     bot.infinity_polling()
-
-
