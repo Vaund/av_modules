@@ -1,6 +1,7 @@
 import os
 import dotenv
 
+import json
 import time
 import telebot
 from telebot import types
@@ -11,6 +12,10 @@ bot = telebot.TeleBot(os.environ["TOKEN"])
 
 
 dict_admins = {}
+dict_new_car = {'Марка': None, 'Год выпуска': None, 'Объем двигателя': None, 'Тип двигателя': None, 'Тип авто': None,
+               'Геолокация продавца': None}
+
+new_car_list = []
 
 
 # словарь админов
@@ -19,6 +24,7 @@ def check_admin2():
     dict_admins[810809759] = {'user_name': 'pasha', 'rights': True}
     dict_admins[647012868] = {'user_name': 'UITAAP22', 'rights': False}
     dict_admins[657287224] = {"user_name": "vaund", "rights": True}
+    dict_admins[938312974] = {"user_name":"den","rights":True}
 
 
 check_admin2()
@@ -99,6 +105,35 @@ def del_admin(message):
     dict_admins.pop(forward_id)
     bot.send_message(message.chat.id, "Администратор удалён")
     print(dict_admins)
+
+
+
+def new_car(message):
+    id_ = message.from_user.id
+    text = message.text
+    flag = True
+    if text != "" and text != "/new_car":
+        flag = False
+    for k, v in dict_new_car[id_].items():
+        print(k, v)
+        if v == None:
+            if flag:
+                m = bot.send_message(id_, f"Какая/Какой {k} у новой машины? Отправь")
+                bot.register_next_step_handler(m, new_car)
+                break
+            elif v != "":
+                dict_new_car[id_][k] = text
+                flag = True
+        if dict_new_car[id_]["Геолокация продавца"] != None:
+            new_car_list.append(dict_new_car)
+            with open('added_cars.json', 'w', encoding='utf-8') as f:
+                json.dump(new_car_list, f, ensure_ascii=False, indent=4)
+            f = open('added_cars.json', 'r', encoding='utf-8')
+            d = json.loads(f.read())
+            f.close()
+            print(d)
+
+    print(dict_new_car[id_])
 
 #
 # @bot.message_handler(content_types=['text'])

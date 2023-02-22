@@ -22,7 +22,8 @@ from lists_and_dictionaries import buf_auto
 from lists_and_dictionaries import auto_
 
 """all pablo's defs"""
-from pablo import check_admin2, new_admin, check_admin, del_admin
+from pablo import check_admin2, new_admin, check_admin, del_admin, new_car
+from pablo import dict_new_car
 
 """all pablos lists and dictionaries"""
 from lists_and_dictionaries import dict_admins
@@ -47,7 +48,7 @@ from keyboards import inline_markup_change_ad
 """lexan4ik handlers"""
 
 
-@bot.message_handler(commands=['start','admin_start','newadmin','stat','newcar','help'])
+@bot.message_handler(commands=['start','admin_start','newadmin','stat','new_car','help'])
 def start(message):
     if message.text == '/start':
         bot.send_message(message.chat.id, "Добро пожаловать")
@@ -73,7 +74,7 @@ def start(message):
         else:
             bot.send_message(message.chat.id, "У вас нет доступа")
 
-    if message.text == '/newcar':
+    if message.text == '/new_car':
         if message.chat.id in dict_admins:
             bot.send_message(message.chat.id, "Выберите действие с автомобилем", reply_markup=inline_markup_avto)
         else:
@@ -139,6 +140,11 @@ def query_handler(call):
         dict_admins[forward_id] = {'user_name': forward_username, 'rights': ["True"]}
         bot.send_message(id, "Администратор добавлен")
         print(dict_admins)
+
+    if flag == "h0":
+        dict_new_car[message.from_user.id] = dict_new_car.copy()
+        new_car(message)
+
 
 
 if __name__ == "__main__":
