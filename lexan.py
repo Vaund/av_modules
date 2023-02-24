@@ -21,6 +21,10 @@ search_dict = {'Марка': None, 'Год выпуска': None, 'Объем д
 dict_search_user = {}
 buf_auto = []
 
+#Стата просмотров
+view_auto = {}
+unique_view = {}
+
 # Словарь
 auto_ = {}
 for el in list_of_lists[1:]:
